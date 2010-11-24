@@ -1,4 +1,4 @@
-package com.youdevise.test.scriptwriter;
+package test;
 
 import com.youdevise.test.narrative.Action;
 import com.youdevise.test.narrative.Actor;
@@ -19,28 +19,15 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 
-
 public class UserGeneratesReadableNarrative {
+    private static final String A_SIMPLE_NARRATIVE_TEST =
+        "public class LibraryUsers { }";
 
-    private File codeDir;
-
-    @Before public void createCodeDirectory() throws IOException {
-        codeDir = File.createTempFile("narrative-code", Long.toString(System.nanoTime()));
-        
-        if (!codeDir.delete() || !codeDir.mkdir()) {
-            throw new IOException("Failed to create code directory: " + codeDir.getAbsolutePath()); 
-        }
-    }
-    
-    @After public void clean() {
-        codeDir.delete();
-    }
-    
     @Test public void
     generatesHtmlFromNarrativeStyleTest() {
         
          AuthorActor author = new AuthorActor();
-         Given.the(author).was_able_to(write_a_simple_narrative_test_in(codeDir));
+         Given.the(author).was_able_to(write(A_SIMPLE_NARRATIVE_TEST));
          
          When.the(author).attempts_to(produce_a_human_readable_version_of_the_test());
          
@@ -48,11 +35,11 @@ public class UserGeneratesReadableNarrative {
                          .should_be(a_readable_form_of_the_narrative());
     }
     
-    private Action<ScriptWriter, AuthorActor> write_a_simple_narrative_test_in(final File codeDir) {
+    private Action<ScriptWriter, AuthorActor> write(final String code) {
         return new Action<ScriptWriter, AuthorActor>() {
             @Override
             public void performFor(AuthorActor actor) {
-                actor.writeSomeCodeIn(codeDir);
+                actor.write(code);
             }
         };
     }
@@ -89,12 +76,12 @@ public class UserGeneratesReadableNarrative {
 
     private Matcher<String> a_readable_form_of_the_narrative() {
         return allOf(containsString("<html>"),
-                     containsString("BasicArithmeticTest"),
+                     containsString("LibraryUsers"),
                      containsString("the operator was able to"));
     }
 
     public static class AuthorActor implements Actor<ScriptWriter, AuthorActor> {
-        private File codeDirectory;
+        private File codeFile;
 
         @Override
         public ScriptWriter tool() {
@@ -102,17 +89,17 @@ public class UserGeneratesReadableNarrative {
         }
 
         public File getOutputPath() {
-            return new File(codeDirectory, "output");
+            return new File("output");
         }
 
         public String getCodePath() {
-            return codeDirectory.getAbsolutePath();
+            return codeFile.getAbsolutePath();
         }
 
-        public void writeSomeCodeIn(File codeDir) {
-            this.codeDirectory = codeDir;
+        public void write(String code) {
             try {
-                FileUtils.copyFileToDirectory(new File("src/test/fixtures/BasicArithmeticTest.java"), codeDir);
+                codeFile = File.createTempFile("code.java", Long.toString(System.nanoTime()));
+                FileUtils.writeStringToFile(codeFile, code);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -131,7 +118,7 @@ public class UserGeneratesReadableNarrative {
     
     public static class ScriptWriter {
         public static void main(String[] args) {
-            File outputDir = new File(args[0], "output");
+            File outputDir = new File("output");
             outputDir.mkdir();
             
             File output = new File(outputDir, "t.html");
