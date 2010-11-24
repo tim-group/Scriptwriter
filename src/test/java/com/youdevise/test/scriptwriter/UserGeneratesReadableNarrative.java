@@ -20,18 +20,19 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 
 public class UserGeneratesReadableNarrative {
-    private static final String A_SIMPLE_NARRATIVE_TEST =
+    private static final String A_SIMPLE_NARRATIVE_TEST_CLASS =
         "public class LibraryUsers { }";
+    private static final String the_test_class = "LibraryUsers";
 
     @Test public void
     generatesHtmlFromNarrativeStyleTest() {
         
          AuthorActor author = new AuthorActor();
-         Given.the(author).was_able_to(write(A_SIMPLE_NARRATIVE_TEST));
+         Given.the(author).was_able_to(write(A_SIMPLE_NARRATIVE_TEST_CLASS));
          
          When.the(author).attempts_to(produce_a_human_readable_version_of_the_test());
          
-         Then.the(author).expects_that(the_output())
+         Then.the(author).expects_that(the_output_for(the_test_class))
                          .should_be(a_readable_form_of_the_narrative());
     }
     
@@ -53,18 +54,13 @@ public class UserGeneratesReadableNarrative {
         };
     }
 
-    private Extractor<String, AuthorActor> the_output() {
+    private Extractor<String, AuthorActor> the_output_for(final String className) {
         return new Extractor<String, AuthorActor>() {
             @Override
             public String grabFor(AuthorActor author) {
-                if (!author.getOutputPath().exists()) {
-                   throw new RuntimeException("Output directory was not created.");
-                }
-                
-                File firstOutput = FileUtils.iterateFiles(author.getOutputPath(), new String[] { "html" }, false).next();
-                
                 try {
-                    return FileUtils.readFileToString(firstOutput);
+                    File htmlFile = new File(author.getOutputPath(), className + ".html");                
+                    return FileUtils.readFileToString(htmlFile);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
