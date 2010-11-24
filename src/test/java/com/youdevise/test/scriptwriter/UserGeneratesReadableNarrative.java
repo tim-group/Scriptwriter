@@ -9,31 +9,39 @@ import com.youdevise.test.narrative.When;
 
 import java.io.File;
 import java.io.IOException;
-
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Matcher;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasXPath;
 
 public class UserGeneratesReadableNarrative {
     private static final String A_SIMPLE_NARRATIVE_TEST_CLASS =
         "public class LibraryUsers { }";
     private static final String the_test_class = "LibraryUsers";
 
+    private static DocumentBuilder builder;
+
+    @BeforeClass public static void makeDocumentBuilder() throws Exception {
+        builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    }
+
     @Test public void
-    generatesHtmlFromNarrativeStyleTest() {
+    generatesHtmlFromNarrativeStyleTest() throws Exception {
         
-         AuthorActor author = new AuthorActor();
-         Given.the(author).was_able_to(write(A_SIMPLE_NARRATIVE_TEST_CLASS));
+        AuthorActor author = new AuthorActor();
+        Given.the(author).was_able_to(write(A_SIMPLE_NARRATIVE_TEST_CLASS));
          
-         When.the(author).attempts_to(produce_a_human_readable_version_of_the_test());
+        When.the(author).attempts_to(produce_a_human_readable_version_of_the_test());
          
-         Then.the(author).expects_that(the_output_for(the_test_class))
-                         .should_be(a_readable_form_of_the_narrative());
+        Then.the(author).expects_that(the_output_for(the_test_class))
+                        .should(have_the_same_title_as(the_test_class));
     }
     
     private Action<ScriptWriter, AuthorActor> write(final String code) {
@@ -54,26 +62,23 @@ public class UserGeneratesReadableNarrative {
         };
     }
 
-    private Extractor<String, AuthorActor> the_output_for(final String className) {
-        return new Extractor<String, AuthorActor>() {
+    private Extractor<Document, AuthorActor> the_output_for(final String className) {
+        return new Extractor<Document, AuthorActor>() {
             @Override
-            public String grabFor(AuthorActor author) {
+            public Document grabFor(AuthorActor author) {
                 try {
-                    File htmlFile = new File(author.getOutputPath(), className + ".html");                
-                    return FileUtils.readFileToString(htmlFile);
-                } catch (IOException e) {
+                    File htmlFile = new File(author.getOutputPath(), className + ".html"); 
+                    return builder.parse(htmlFile);
+                } catch (Exception e) {
                     e.printStackTrace();
-                }
-                
+                } 
                 return null;
             }
         }; 
     }
 
-    private Matcher<String> a_readable_form_of_the_narrative() {
-        return allOf(containsString("<html>"),
-                     containsString("LibraryUsers"),
-                     containsString("the operator was able to"));
+    private Matcher<Node> have_the_same_title_as(String className) {
+        return hasXPath("/html/head/title", equalTo(className));
     }
 
     public static class AuthorActor implements Actor<ScriptWriter, AuthorActor> {
@@ -92,13 +97,9 @@ public class UserGeneratesReadableNarrative {
             return codeFile.getAbsolutePath();
         }
 
-        public void write(String code) {
-            try {
-                codeFile = File.createTempFile("code.java", Long.toString(System.nanoTime()));
-                FileUtils.writeStringToFile(codeFile, code);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        public void write(String code) throws Exception {
+            codeFile = File.createTempFile("scriptwriter-test-", Long.toString(System.nanoTime()));
+            FileUtils.writeStringToFile(codeFile, code);
         }
 
         @Override
@@ -117,9 +118,9 @@ public class UserGeneratesReadableNarrative {
             File outputDir = new File("output");
             outputDir.mkdir();
             
-            File output = new File(outputDir, "t.html");
+            File output = new File(outputDir, "something.html");
             try {
-                FileUtils.writeStringToFile(output, "Hello");
+                FileUtils.writeStringToFile(output, "<html><head><title>a title</title></head></html>");
             } catch (IOException e) {
                 e.printStackTrace();
             }
