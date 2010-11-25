@@ -26,10 +26,21 @@ public class UserGeneratesReadableNarrative {
         "public class LibraryUsers { }";
     private static final String the_test_class = "LibraryUsers";
 
+    private static File codeDir;
+    private static File outputDir;
     private static DocumentBuilder builder;
 
-    @BeforeClass public static void makeDocumentBuilder() throws Exception {
+    @BeforeClass public static void setup() throws Exception {
+        codeDir = makeTempDir("scriptwriter-test-code-");
+        outputDir = makeTempDir("scriptwriter-test-output-");
         builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    }
+
+    public static File makeTempDir(String name) throws Exception {
+        File dir = File.createTempFile(name, Long.toString(System.nanoTime()));
+        dir.delete();
+        dir.mkdir();
+        return dir;
     }
 
     @Test public void
@@ -57,7 +68,7 @@ public class UserGeneratesReadableNarrative {
         return new Action<ScriptWriter, AuthorActor>() {
             @Override
             public void performFor(AuthorActor author) {
-                ScriptWriter.main(new String[] { author.getCodePath() });
+                ScriptWriter.main(new String[] { "-o", outputDir.getAbsolutePath(), author.getCodePath() });
             }
         };
     }
@@ -67,7 +78,7 @@ public class UserGeneratesReadableNarrative {
             @Override
             public Document grabFor(AuthorActor author) {
                 try {
-                    File htmlFile = new File(author.getOutputPath(), className + ".html"); 
+                    File htmlFile = new File(outputDir, className + ".html"); 
                     return builder.parse(htmlFile);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -89,17 +100,20 @@ public class UserGeneratesReadableNarrative {
             return null;
         }
 
-        public File getOutputPath() {
-            return new File("output");
-        }
-
         public String getCodePath() {
+            if (null == codeFile) { 
+                throw new IllegalStateException("should have created code file before trying to read it");
+            }
             return codeFile.getAbsolutePath();
         }
 
-        public void write(String code) throws Exception {
-            codeFile = File.createTempFile("scriptwriter-test-", Long.toString(System.nanoTime()));
-            FileUtils.writeStringToFile(codeFile, code);
+        public void write(String code) {
+            try {
+                codeFile = File.createTempFile("scriptwriter-test-", Long.toString(System.nanoTime()), codeDir);
+                FileUtils.writeStringToFile(codeFile, code);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -118,7 +132,7 @@ public class UserGeneratesReadableNarrative {
             File outputDir = new File("output");
             outputDir.mkdir();
             
-            File output = new File(outputDir, "something.html");
+            File output = new File(outputDir, "LibraryUsers.html");
             try {
                 FileUtils.writeStringToFile(output, "<html><head><title>a title</title></head></html>");
             } catch (IOException e) {
