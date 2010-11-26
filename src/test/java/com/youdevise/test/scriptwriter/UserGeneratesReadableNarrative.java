@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import static org.junit.Assert.fail;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasXPath;
 
@@ -84,6 +85,7 @@ public class UserGeneratesReadableNarrative {
                     return builder.parse(htmlFile);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    fail("Could not read or parse output file: " + e.getMessage());
                 } 
                 return null;
             }
@@ -115,6 +117,7 @@ public class UserGeneratesReadableNarrative {
                 FileUtils.writeStringToFile(codeFile, code);
             } catch (Exception e) {
                 e.printStackTrace();
+                fail("Could not write to code file: " + e.getMessage());
             }
         }
 
