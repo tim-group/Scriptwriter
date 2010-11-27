@@ -15,8 +15,9 @@ public class Scriptwriter {
         outputDir.mkdir();
 
         File codeFile = new File(args[2]);
-        JavaClass clazz = new JavaClass(codeFile);
-        String className = clazz.getName();
+        JavaParser parser = new JavaParser();
+        JavaClass clazz = parser.parse(codeFile);
+        String className = clazz.name;
             
         File output = new File(outputDir, className + ".html");
         try {
@@ -26,12 +27,10 @@ public class Scriptwriter {
         }
     }
 
-    public static class JavaClass {
+    public static class JavaParser {
         private static Pattern classDeclarationPattern = Pattern.compile("class\\s*(\\w*)");
-
-        private String name;
-
-        public JavaClass(File file) {
+        
+        public JavaClass parse(File file) {
             String text;
             try {
                 text = FileUtils.readFileToString(file);
@@ -41,12 +40,16 @@ public class Scriptwriter {
 
             java.util.regex.Matcher classDeclarationMatcher = classDeclarationPattern.matcher(text);
             if (classDeclarationMatcher.find()) { 
-                name = classDeclarationMatcher.group(1); 
+                return new JavaClass(classDeclarationMatcher.group(1)); 
             } else { 
                 throw new IllegalStateException("cannot parse"); 
             }
         }
+    }
 
-        public String getName() { return name; }
+    public static class JavaClass {
+        public String name;
+
+        public JavaClass(String name) { this.name = name; }
     }
 }
