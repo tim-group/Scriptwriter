@@ -12,13 +12,13 @@ import org.apache.commons.io.FileUtils;
 public class Scriptwriter {
     public static void main(String[] args) {
         File outputDir = new File(args[1]);
-        outputDir.mkdir();
-
         File codeFile = new File(args[2]);
+
         JavaParser parser = new JavaParser();
         JavaClass clazz = parser.parse(codeFile);
         String className = clazz.name;
             
+        outputDir.mkdir();
         File output = new File(outputDir, className + ".html");
         try {
             FileUtils.writeStringToFile(output, "<html><head><title>" + className + "</title></head></html>");
