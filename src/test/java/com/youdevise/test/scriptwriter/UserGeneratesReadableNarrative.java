@@ -54,8 +54,7 @@ public class UserGeneratesReadableNarrative {
          
         When.the(author).attempts_to(produce_a_human_readable_version_of_the_test());
          
-        Then.the(author).expects_that(the_output_for(the_test_class))
-                        .should(have_the_same_title_as(the_test_class));
+        Then.the(author).expects_that(the_output_for(the_test_class), has_the_same_title_as(the_test_class));
     }
     
     private Action<Scriptwriter, AuthorActor> write(final String code) {
@@ -92,7 +91,7 @@ public class UserGeneratesReadableNarrative {
         }; 
     }
 
-    private Matcher<Node> have_the_same_title_as(String className) {
+    private Matcher<Node> has_the_same_title_as(String className) {
         return hasXPath("/html/head/title", equalTo(className));
     }
 

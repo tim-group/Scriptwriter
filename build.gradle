@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    testCompile                          name: 'narrative',               version: '0.9'
+    testCompile                          name: 'narrative',               version: '1.0'
     testCompile  group: 'commons-io',    name: 'commons-io',              version: '2.0' 
     testCompile  group: 'jmock',         name: 'jmock',                   version: '1.2.0'
     testCompile  group: 'junit',         name: 'junit-dep',               version: '4.5'
