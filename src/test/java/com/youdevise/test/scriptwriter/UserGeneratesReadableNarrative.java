@@ -34,8 +34,8 @@ public class UserGeneratesReadableNarrative {
     private static DocumentBuilder builder;
 
     @BeforeClass public static void setup() throws Exception {
-        codeDir = makeTempDir("scriptwriter-test-code-");
-        outputDir = makeTempDir("scriptwriter-test-output-");
+        codeDir = makeTempDir("Scriptwriter-test-code-");
+        outputDir = makeTempDir("Scriptwriter-test-output-");
         builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
     }
 
@@ -58,8 +58,8 @@ public class UserGeneratesReadableNarrative {
                         .should(have_the_same_title_as(the_test_class));
     }
     
-    private Action<ScriptWriter, AuthorActor> write(final String code) {
-        return new Action<ScriptWriter, AuthorActor>() {
+    private Action<Scriptwriter, AuthorActor> write(final String code) {
+        return new Action<Scriptwriter, AuthorActor>() {
             @Override
             public void performFor(AuthorActor actor) {
                 actor.write(code);
@@ -67,11 +67,11 @@ public class UserGeneratesReadableNarrative {
         };
     }
 
-    private Action<ScriptWriter, AuthorActor> produce_a_human_readable_version_of_the_test() {
-        return new Action<ScriptWriter, AuthorActor>() {
+    private Action<Scriptwriter, AuthorActor> produce_a_human_readable_version_of_the_test() {
+        return new Action<Scriptwriter, AuthorActor>() {
             @Override
             public void performFor(AuthorActor author) {
-                ScriptWriter.main(new String[] { "-o", outputDir.getAbsolutePath(), author.getCodePath() });
+                Scriptwriter.main(new String[] { "-o", outputDir.getAbsolutePath(), author.getCodePath() });
             }
         };
     }
@@ -96,11 +96,11 @@ public class UserGeneratesReadableNarrative {
         return hasXPath("/html/head/title", equalTo(className));
     }
 
-    public static class AuthorActor implements Actor<ScriptWriter, AuthorActor> {
+    public static class AuthorActor implements Actor<Scriptwriter, AuthorActor> {
         private File codeFile;
 
         @Override
-        public ScriptWriter tool() {
+        public Scriptwriter tool() {
             return null;
         }
 
@@ -113,7 +113,7 @@ public class UserGeneratesReadableNarrative {
 
         public void write(String code) {
             try {
-                codeFile = File.createTempFile("scriptwriter-test-", Long.toString(System.nanoTime()), codeDir);
+                codeFile = File.createTempFile("Scriptwriter-test-", Long.toString(System.nanoTime()), codeDir);
                 FileUtils.writeStringToFile(codeFile, code);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -122,7 +122,7 @@ public class UserGeneratesReadableNarrative {
         }
 
         @Override
-        public void perform(Action<ScriptWriter, AuthorActor> action) {
+        public void perform(Action<Scriptwriter, AuthorActor> action) {
             action.performFor(this);
         }
 
@@ -130,47 +130,5 @@ public class UserGeneratesReadableNarrative {
         public <DATA> DATA grabUsing(Extractor<DATA, AuthorActor> extractor) {
             return extractor.grabFor(this);
         }
-    }
-    
-    public static class ScriptWriter {
-        public static void main(String[] args) {
-            File outputDir = new File(args[1]);
-            outputDir.mkdir();
-
-            File codeFile = new File(args[2]);
-            JavaClass clazz = new JavaClass(codeFile);
-            String className = clazz.getName();
-            
-            File output = new File(outputDir, className + ".html");
-            try {
-                FileUtils.writeStringToFile(output, "<html><head><title>" + className + "</title></head></html>");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static class JavaClass {
-        private static Pattern classDeclarationPattern = Pattern.compile("class\\s*(\\w*)");
-
-        private String name;
-
-        public JavaClass(File file) {
-            String text;
-            try {
-                text = FileUtils.readFileToString(file);
-            } catch (IOException e) {
-                throw new IllegalStateException("cannot find file " + file.getAbsolutePath());
-            }
-
-            java.util.regex.Matcher classDeclarationMatcher = classDeclarationPattern.matcher(text);
-            if (classDeclarationMatcher.find()) { 
-                name = classDeclarationMatcher.group(1); 
-            } else { 
-                throw new IllegalStateException("cannot parse"); 
-            }
-        }
-
-        public String getName() { return name; }
     }
 }
