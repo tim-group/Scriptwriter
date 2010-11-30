@@ -21,7 +21,7 @@ public class ConfigurationTest {
         assertEquals(config.outputDir.getPath(), DEFAULT_OUTPUT_DIR);
     }
 
-    private Configuration makeConfigurationFor(String [] args) {
+    private Configuration makeConfigurationFor(String [] args) throws Exception {
         Configuration config = new Configuration();
         config.parse(args);
         return config;
