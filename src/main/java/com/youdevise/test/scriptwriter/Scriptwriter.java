@@ -8,6 +8,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
@@ -16,7 +17,14 @@ import org.kohsuke.args4j.CmdLineException;
 
 public class Scriptwriter {
     public static void main(String[] args) {
-        config = new Configuration(args);
+        Configuration config = new Configuration();
+        try {
+            config.parse(args);
+        } catch (ConfigurationException e) {
+            System.err.print(config.usage);
+            System.err.println(e.getMessage());
+            return;
+        }
 
         JavaParser parser = new JavaParser();
         JavaClass clazz = parser.parse(config.codeFile);
@@ -38,19 +46,34 @@ public class Scriptwriter {
         @Option(name = "-o", usage = "Output directory")
         public File outputDir = new File("output");
 
-        public Configuration(String[] args) {
-            CmdLineParser cmdParser = new CmdLineParser(this);
+        public String usage;
+
+        private CmdLineParser cmdParser;
+
+        public Configuration() {
+            cmdParser = new CmdLineParser(this);
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            cmdParser.printUsage(output);
+            usage = output.toString();
+        }
+
+        public void parse(String[] args) throws ConfigurationException{
             try {
                 cmdParser.parseArgument(args);
-            } catch (CmdLineException e) { // FIXXXXXXXX
-                System.err.println(e.getMessage());
-                cmdParser.printUsage(System.err);
-                return;
+            } catch (CmdLineException e) {
+                throw new ConfigurationException(e.getMessage(), e);
             }
         }
     }
 
-    public static class Options {
+    public static class ConfigurationException extends Exception {
+        public ConfigurationException(String message) {
+            super(message);
+        }
+
+        public ConfigurationException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 
     public static class JavaParser {
