@@ -13,6 +13,6 @@ dependencies {
     testCompile  group: 'junit',         name: 'junit-dep',               version: '4.5'
     testCompile  group: 'org.hamcrest',  name: 'hamcrest-integration',    version: '1.2'
 
-    //compile      group: 'args4j',        name: 'args4j',                  version: '2.0.12'
+    compile      group: 'args4j',        name: 'args4j',                  version: '2.0.12'
     compile      group: 'commons-io',    name: 'commons-io',              version: '2.0' 
 }

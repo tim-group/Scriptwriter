@@ -9,22 +9,42 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.FileUtils;
 
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.CmdLineException;
+
 public class Scriptwriter {
     public static void main(String[] args) {
-        File outputDir = new File(args[1]);
-        File codeFile = new File(args[2]);
+        Options options = new Options();
+        CmdLineParser cmdParser = new CmdLineParser(options);
+        try {
+            cmdParser.parseArgument(args);
+        } catch (CmdLineException e) {
+            System.err.println(e.getMessage());
+            cmdParser.printUsage(System.err);
+            return;
+        }
 
         JavaParser parser = new JavaParser();
-        JavaClass clazz = parser.parse(codeFile);
+        JavaClass clazz = parser.parse(options.codeFile);
         String className = clazz.name;
             
-        outputDir.mkdir();
-        File output = new File(outputDir, className + ".html");
+        options.outputDir.mkdir();
+        File output = new File(options.outputDir, className + ".html");
         try {
             FileUtils.writeStringToFile(output, "<html><head><title>" + className + "</title></head></html>");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static class Options {
+        @Argument(required = true, index = 0, usage = "The Java file to be converted")
+        public File codeFile;
+
+        @Option(name = "-o", usage = "Output directory")
+        public File outputDir = new File("output");
     }
 
     public static class JavaParser {
