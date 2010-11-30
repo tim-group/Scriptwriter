@@ -2,6 +2,7 @@ package com.youdevise.test.scriptwriter;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 
@@ -17,7 +18,7 @@ public class ConfigurationTest {
     }
 
     @Test public void
-    parsesDefaultOutputDirectoryUsedWhenNoneSpecified() throws Exception {
+    usesDefaultOutputDirectoryUsedWhenNoneSpecified() throws Exception {
         Configuration config = makeConfigurationFor(new String[] { CODE_FILE });
         assertEquals(config.outputDir.getPath(), DEFAULT_OUTPUT_DIR);
     }
@@ -46,9 +47,8 @@ public class ConfigurationTest {
     @Test public void
     createsUsageMessage() throws Exception {
         Configuration config = new Configuration();
-        assertThat(config.usage, allOf(containsString("Java file to be converted"), 
-                                       containsString("output directory")));
-        System.out.println(config.usage);
+        assertThat(config.usage, allOf(containsString("The Java file to be converted - required"), 
+                                       containsString("The output directory - optional, defaults to 'output'")));
     }
 
     private Configuration makeConfigurationFor(String [] args) throws Exception {

@@ -10,10 +10,10 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.CmdLineException;
 
 public class Configuration {
-    @Argument(required = true, index = 0, usage = "The Java file to be converted")
+    @Argument(required = true, index = 0, usage = "The Java file to be converted - required")
     public File codeFile;
 
-    @Option(name = "-o", usage = "Output directory")
+    @Option(name = "-o", usage = "The output directory - optional, defaults to 'output'")
     public File outputDir = new File("output");
 
     public String usage;
@@ -22,7 +22,9 @@ public class Configuration {
 
     public Configuration() {
         cmdParser = new CmdLineParser(this);
-        // ADD USAGE
+        ByteArrayOutputStream usageStream = new ByteArrayOutputStream();
+        cmdParser.printUsage(usageStream);
+        usage = usageStream.toString();
     }
 
     public void parse(String[] args) throws ConfigurationException {
