@@ -9,17 +9,21 @@ public class ConfigurationTest {
 
     @Test public void
     parsesSingleArgumentAsCodeFile() throws Exception {
-        Configuration config = new Configuration();
-        config.parse(new String[] { CODE_FILE });
+        Configuration config = makeConfigurationFor(new String[] { CODE_FILE });
 
         assertEquals(config.codeFile.getPath(), CODE_FILE);
     }
 
     @Test public void
     parsesDefaultOutputDirectoryUsedWhenNoneSpecified() throws Exception {
-        Configuration config = new Configuration();
-        config.parse(new String[] { DEFAULT_OUTPUT_DIR });
+        Configuration config = makeConfigurationFor(new String[] { DEFAULT_OUTPUT_DIR });
 
         assertEquals(config.outputDir.getPath(), DEFAULT_OUTPUT_DIR);
+    }
+
+    private Configuration makeConfigurationFor(String [] args) {
+        Configuration config = new Configuration();
+        config.parse(args);
+        return config;
     }
 }
