@@ -8,12 +8,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.CmdLineException;
 
 public class Scriptwriter {
     public static void main(String[] args) {
@@ -36,43 +30,6 @@ public class Scriptwriter {
             FileUtils.writeStringToFile(output, "<html><head><title>" + className + "</title></head></html>");
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    public static class Configuration {
-        @Argument(required = true, index = 0, usage = "The Java file to be converted")
-        public File codeFile;
-
-        @Option(name = "-o", usage = "Output directory")
-        public File outputDir = new File("output");
-
-        public String usage;
-
-        private CmdLineParser cmdParser;
-
-        public Configuration() {
-            cmdParser = new CmdLineParser(this);
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            cmdParser.printUsage(output);
-            usage = output.toString();
-        }
-
-        public void parse(String[] args) throws ConfigurationException{
-            try {
-                cmdParser.parseArgument(args);
-            } catch (CmdLineException e) {
-                throw new ConfigurationException(e.getMessage(), e);
-            }
-        }
-    }
-
-    public static class ConfigurationException extends Exception {
-        public ConfigurationException(String message) {
-            super(message);
-        }
-
-        public ConfigurationException(String message, Throwable cause) {
-            super(message, cause);
         }
     }
 
