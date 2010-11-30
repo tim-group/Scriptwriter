@@ -2,6 +2,8 @@ package com.youdevise.test.scriptwriter;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 
 public class ConfigurationTest {
     private static final String CODE_FILE = "Code.java";
@@ -43,6 +45,10 @@ public class ConfigurationTest {
 
     @Test public void
     createsUsageMessage() throws Exception {
+        Configuration config = new Configuration();
+        assertThat(config.usage, allOf(containsString("Java file to be converted"), 
+                                       containsString("output directory")));
+        System.out.println(config.usage);
     }
 
     private Configuration makeConfigurationFor(String [] args) throws Exception {
