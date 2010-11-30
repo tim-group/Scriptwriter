@@ -16,22 +16,14 @@ import org.kohsuke.args4j.CmdLineException;
 
 public class Scriptwriter {
     public static void main(String[] args) {
-        Options options = new Options();
-        CmdLineParser cmdParser = new CmdLineParser(options);
-        try {
-            cmdParser.parseArgument(args);
-        } catch (CmdLineException e) {
-            System.err.println(e.getMessage());
-            cmdParser.printUsage(System.err);
-            return;
-        }
+        config = new Configuration(args);
 
         JavaParser parser = new JavaParser();
-        JavaClass clazz = parser.parse(options.codeFile);
+        JavaClass clazz = parser.parse(config.codeFile);
         String className = clazz.name;
             
-        options.outputDir.mkdir();
-        File output = new File(options.outputDir, className + ".html");
+        config.outputDir.mkdir();
+        File output = new File(config.outputDir, className + ".html");
         try {
             FileUtils.writeStringToFile(output, "<html><head><title>" + className + "</title></head></html>");
         } catch (IOException e) {
@@ -39,12 +31,26 @@ public class Scriptwriter {
         }
     }
 
-    public static class Options {
+    public static class Configuration {
         @Argument(required = true, index = 0, usage = "The Java file to be converted")
         public File codeFile;
 
         @Option(name = "-o", usage = "Output directory")
         public File outputDir = new File("output");
+
+        public Configuration(String[] args) {
+            CmdLineParser cmdParser = new CmdLineParser(this);
+            try {
+                cmdParser.parseArgument(args);
+            } catch (CmdLineException e) { // FIXXXXXXXX
+                System.err.println(e.getMessage());
+                cmdParser.printUsage(System.err);
+                return;
+            }
+        }
+    }
+
+    public static class Options {
     }
 
     public static class JavaParser {
