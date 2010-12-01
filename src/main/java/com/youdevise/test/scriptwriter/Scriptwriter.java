@@ -20,42 +20,39 @@ public class Scriptwriter {
             return;
         }
 
-        JavaParser parser = new JavaParser();
-        JavaClass clazz = parser.parse(config.codeFile);
-        String className = clazz.name;
-            
-        config.outputDir.mkdir();
-        File output = new File(config.outputDir, className + ".html");
+        Interpreter interpreter = new Interpreter(config.outputDir);
+
+        String code;
         try {
-            FileUtils.writeStringToFile(output, "<html><head><title>" + className + "</title></head></html>");
+            code = FileUtils.readFileToString(config.codeFile);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("cannot read from file " + config.codeFile.getAbsolutePath());
         }
+        interpreter.interpret(code);
     }
 
-    public static class JavaParser {
+    public static class Interpreter {
         private static Pattern classDeclarationPattern = Pattern.compile("class\\s*(\\w*)");
-        
-        public JavaClass parse(File file) {
-            String text;
-            try {
-                text = FileUtils.readFileToString(file);
-            } catch (IOException e) {
-                throw new IllegalStateException("cannot find file " + file.getAbsolutePath());
-            }
+    
+        private File outputDir;
 
-            java.util.regex.Matcher classDeclarationMatcher = classDeclarationPattern.matcher(text);
-            if (classDeclarationMatcher.find()) { 
-                return new JavaClass(classDeclarationMatcher.group(1)); 
-            } else { 
-                throw new IllegalStateException("cannot parse"); 
+        public Interpreter(File outputDir) { this.outputDir = outputDir; }
+        
+        public void interpret(String code) {
+            java.util.regex.Matcher classDeclarationMatcher = classDeclarationPattern.matcher(code);
+            if (false == classDeclarationMatcher.find()) { 
+                throw new IllegalStateException("cannot find class declaration"); 
+            }
+            String className = classDeclarationMatcher.group(1); 
+
+            outputDir.mkdir();
+            File outputFile = new File(outputDir, className + ".html");
+
+            try {
+                FileUtils.writeStringToFile(outputFile, "<html><head><title>" + className + "</title></head></html>");
+            } catch (IOException e) {
+                throw new IllegalStateException("cannot write to file " + outputFile.getAbsolutePath());
             }
         }
-    }
-
-    public static class JavaClass {
-        public String name;
-
-        public JavaClass(String name) { this.name = name; }
     }
 }
