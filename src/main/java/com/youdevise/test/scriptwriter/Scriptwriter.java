@@ -20,7 +20,7 @@ public class Scriptwriter {
             return;
         }
 
-        HTMLPrinter printer = new HTMLPrinter(config.outputDir);
+        HTMLPrinter printer = new HTMLPrinter(new FileRecorder(config.outputDir));
         Interpreter interpreter = new Interpreter(printer);
 
         String code;
@@ -45,16 +45,16 @@ public class Scriptwriter {
         
         public void interpret(String code) {
             listener.start();
+            listener.giveClassName(extractClassName(code));
+            listener.finish();
+        }
 
+        public String extractClassName(String code) {
             java.util.regex.Matcher classDeclarationMatcher = classDeclarationPattern.matcher(code);
             if (false == classDeclarationMatcher.find()) { 
                 throw new IllegalStateException("cannot find class declaration"); 
             }
-            String className = classDeclarationMatcher.group(1); 
-
-            listener.giveClassName(className);
-
-            listener.finish();
+            return classDeclarationMatcher.group(1); 
         }
     }
 
@@ -65,12 +65,12 @@ public class Scriptwriter {
     }
 
     public static class HTMLPrinter implements TokenListener {
-        private File outputDir;
+        private Recorder recorder;
         private String className;
         private String html;
 
-        public HTMLPrinter(File outputDir) { 
-            this.outputDir = outputDir; 
+        public HTMLPrinter(Recorder recorder) { 
+            this.recorder = recorder;
             html = "";
         }
 
@@ -82,11 +82,25 @@ public class Scriptwriter {
         @Override public void finish() { html += "</html>"; }
 
         public void print() {
+            recorder.write(className, "html", html);
+        }
+    }
+
+    public static interface Recorder {
+        public void write(String title, String type, String contents);
+    }
+
+    public static class FileRecorder implements Recorder {
+        private File outputDir;
+
+        public FileRecorder(File outputDir) { this.outputDir = outputDir; }
+        
+        @Override public void write(String title, String type, String contents) {
             outputDir.mkdir();
-            File outputFile = new File(outputDir, className + ".html");
+            File outputFile = new File(outputDir, title + "." + type);
 
             try {
-                FileUtils.writeStringToFile(outputFile, html);
+                FileUtils.writeStringToFile(outputFile, contents);
             } catch (IOException e) {
                 throw new IllegalStateException("cannot write to file " + outputFile.getAbsolutePath());
             }
