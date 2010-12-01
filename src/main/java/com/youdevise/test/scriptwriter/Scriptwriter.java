@@ -20,7 +20,8 @@ public class Scriptwriter {
             return;
         }
 
-        Interpreter interpreter = new Interpreter(config.outputDir);
+        HTMLPrinter printer = new HTMLPrinter(config.outputDir);
+        Interpreter interpreter = new Interpreter(printer);
 
         String code;
         try {
@@ -28,15 +29,19 @@ public class Scriptwriter {
         } catch (IOException e) {
             throw new IllegalStateException("cannot read from file " + config.codeFile.getAbsolutePath());
         }
+
         interpreter.interpret(code);
+        printer.print();
     }
 
     public static class Interpreter {
         private static Pattern classDeclarationPattern = Pattern.compile("class\\s*(\\w*)");
-    
-        private File outputDir;
 
-        public Interpreter(File outputDir) { this.outputDir = outputDir; }
+        private TokenListener listener;
+    
+        public Interpreter(TokenListener listener) {
+            this.listener = listener;
+        }
         
         public void interpret(String code) {
             java.util.regex.Matcher classDeclarationMatcher = classDeclarationPattern.matcher(code);
@@ -45,10 +50,23 @@ public class Scriptwriter {
             }
             String className = classDeclarationMatcher.group(1); 
 
-            print(className);
+            listener.giveClassName(className);
         }
-        
-        public void print(String className) {
+    }
+
+    public static interface TokenListener {
+        public void giveClassName(String className);
+    }
+
+    public static class HTMLPrinter implements TokenListener {
+        private File outputDir;
+        private String className;
+
+        public HTMLPrinter(File outputDir) { this.outputDir = outputDir; }
+
+        @Override public void giveClassName(String className) { this.className = className; }
+
+        public void print() {
             outputDir.mkdir();
             File outputFile = new File(outputDir, className + ".html");
 
