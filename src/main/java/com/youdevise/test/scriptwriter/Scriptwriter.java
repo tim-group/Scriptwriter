@@ -45,6 +45,10 @@ public class Scriptwriter {
             }
             String className = classDeclarationMatcher.group(1); 
 
+            print(className);
+        }
+        
+        public void print(String className) {
             outputDir.mkdir();
             File outputFile = new File(outputDir, className + ".html");
 
