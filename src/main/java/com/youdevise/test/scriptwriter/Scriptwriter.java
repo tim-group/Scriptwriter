@@ -44,6 +44,8 @@ public class Scriptwriter {
         }
         
         public void interpret(String code) {
+            listener.start();
+
             java.util.regex.Matcher classDeclarationMatcher = classDeclarationPattern.matcher(code);
             if (false == classDeclarationMatcher.find()) { 
                 throw new IllegalStateException("cannot find class declaration"); 
@@ -51,27 +53,40 @@ public class Scriptwriter {
             String className = classDeclarationMatcher.group(1); 
 
             listener.giveClassName(className);
+
+            listener.finish();
         }
     }
 
     public static interface TokenListener {
+        public void start();
         public void giveClassName(String className);
+        public void finish();
     }
 
     public static class HTMLPrinter implements TokenListener {
         private File outputDir;
         private String className;
+        private String html;
 
-        public HTMLPrinter(File outputDir) { this.outputDir = outputDir; }
+        public HTMLPrinter(File outputDir) { 
+            this.outputDir = outputDir; 
+            html = "";
+        }
 
-        @Override public void giveClassName(String className) { this.className = className; }
+        @Override public void start() { html = "<html>"; }
+        @Override public void giveClassName(String className) { 
+            this.className = className; 
+            html += "<head><title>" + className + "</title></head>";
+        }
+        @Override public void finish() { html += "</html>"; }
 
         public void print() {
             outputDir.mkdir();
             File outputFile = new File(outputDir, className + ".html");
 
             try {
-                FileUtils.writeStringToFile(outputFile, "<html><head><title>" + className + "</title></head></html>");
+                FileUtils.writeStringToFile(outputFile, html);
             } catch (IOException e) {
                 throw new IllegalStateException("cannot write to file " + outputFile.getAbsolutePath());
             }
