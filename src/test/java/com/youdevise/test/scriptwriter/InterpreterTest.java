@@ -9,6 +9,7 @@ public class InterpreterTest {
     private static final String TRIVIAL_CLASS_CODE = "public class Translator { }";
     private static final String CLASS_NAME_FROM_TRIVIAL_CLASS = "Translator";
     private static final String INTERFACE_CODE = "public interface Animal { }";
+    private static final String INVALID_CODE = "public klass Invalid { }";
 
     private Mockery context = new Mockery();   
     
@@ -52,17 +53,23 @@ public class InterpreterTest {
     public void
     throwsExceptionIfGivenInterface() throws Exception { 
         final TokenListener listener = context.mock(TokenListener.class);
-        final Sequence listenerCalls = context.sequence("listenerCalls");
         
         context.checking(new Expectations() {{
-            oneOf (listener).start(); inSequence(listenerCalls);
+            oneOf (listener).start(); 
         }});
 
         runAndVerifyInterpreter(listener, INTERFACE_CODE);
     }
 
+    @Test(expected=InterpreterException.class)
     public void
     throwsExceptionIfGivenInvalidCode() throws Exception { 
+        final TokenListener listener = context.mock(TokenListener.class);
+        
+        context.checking(new Expectations() {{
+            oneOf (listener).start(); 
+        }});
 
+        runAndVerifyInterpreter(listener, INVALID_CODE);
     }
 }
