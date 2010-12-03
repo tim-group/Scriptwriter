@@ -12,16 +12,16 @@ public class Interpreter {
         this.listener = listener;
     }
         
-    public void interpret(String code) {
+    public void interpret(String code) throws InterpreterException {
         listener.start();
         listener.giveClassName(extractClassName(code));
         listener.finish();
     }
 
-    public String extractClassName(String code) {
+    public String extractClassName(String code) throws InterpreterException {
         java.util.regex.Matcher classDeclarationMatcher = classDeclarationPattern.matcher(code);
         if (false == classDeclarationMatcher.find()) { 
-            throw new IllegalStateException("cannot find class declaration"); 
+            throw new InterpreterException("Cannot find class declaration"); 
         }
         return classDeclarationMatcher.group(1); 
     }

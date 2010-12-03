@@ -26,7 +26,13 @@ public class Scriptwriter {
             throw new IllegalStateException("cannot read from file " + config.codeFile.getAbsolutePath());
         }
 
-        interpreter.interpret(code);
+        try {
+            interpreter.interpret(code);
+        } catch (InterpreterException e) {
+            System.err.println("Error in interpreting code");
+            System.err.println(e.getMessage());
+        }
+
         printer.print();
     }
 }
