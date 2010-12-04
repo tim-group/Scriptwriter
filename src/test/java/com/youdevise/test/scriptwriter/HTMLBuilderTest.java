@@ -20,9 +20,7 @@ public class HTMLBuilderTest {
         }});
 
         HTMLBuilder builder = new HTMLBuilder(recorder);
-        builder.start();
-        builder.giveClassName(CLASS_NAME);
-        builder.finish();
+        builder.className(CLASS_NAME);
         builder.output();
 
         context.assertIsSatisfied();

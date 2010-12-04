@@ -21,7 +21,7 @@ public class Interpreter {
         String className = parse(codeStream);
 
         listener.start();
-        listener.giveClassName(className);
+        listener.className(className);
         listener.finish();
     }
 

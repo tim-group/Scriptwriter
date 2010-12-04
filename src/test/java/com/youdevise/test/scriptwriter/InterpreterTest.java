@@ -24,7 +24,7 @@ public class InterpreterTest {
 
         context.checking(new Expectations() {{
             oneOf (listener).start(); inSequence(listenerCalls);
-            allowing (listener).giveClassName(with(any(String.class)));
+            allowing (listener).className(with(any(String.class)));
             oneOf (listener).finish(); inSequence(listenerCalls);
         }});
 
@@ -39,7 +39,7 @@ public class InterpreterTest {
 
         context.checking(new Expectations() {{
             oneOf (listener).start(); inSequence(listenerCalls);
-            oneOf (listener).giveClassName(CLASS_NAME_FROM_TRIVIAL_CLASS);
+            oneOf (listener).className(CLASS_NAME_FROM_TRIVIAL_CLASS);
             oneOf (listener).finish(); inSequence(listenerCalls);
         }});
 

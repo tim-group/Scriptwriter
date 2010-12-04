@@ -28,7 +28,7 @@ public class HTMLBuilder implements TokenListener {
     @Override public void start() { }
     @Override public void finish() { }
 
-    @Override public void giveClassName(String className) { 
+    @Override public void className(String className) { 
         this.className = className; 
         Element head = doc.createElement("head");
         root.appendChild(head);
