@@ -6,6 +6,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
 public class HTMLBuilder implements TokenListener {
@@ -27,15 +28,23 @@ public class HTMLBuilder implements TokenListener {
 
     @Override public void className(String className) { 
         this.className = className; 
-        Element head = doc.createElement("head");
-        root.appendChild(head);
-        Element title = doc.createElement("title");
-        head.appendChild(title);
-        Text titleText = doc.createTextNode(className);
-        title.appendChild(titleText);
+        Element head = addChildElement(root, "head");
+        Element title = addChildElement(head, "title");
+        addTextChild(title, className);
     }
 
     public void output() {
         recorder.write(className, "html", doc);
+    }
+
+    private Element addChildElement(Node node, String name) {
+        Element element = doc.createElement(name);
+        node.appendChild(element);
+        return element;
+    }
+
+    private void addTextChild(Node node, String text) {
+        Text textNode = doc.createTextNode(text);
+        node.appendChild(textNode);
     }
 }
