@@ -29,7 +29,6 @@ public class FileRecorder implements Recorder {
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
             //transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN");
             //transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
-System.out.println("URI resolver is: " + transformer.getURIResolver());
 
             transformer.transform(source, result);
         } catch (TransformerException e) { 
