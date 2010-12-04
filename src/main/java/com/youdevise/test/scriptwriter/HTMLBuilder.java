@@ -8,36 +8,37 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
-public class HTMLPrinter implements TokenListener {
+public class HTMLBuilder implements TokenListener {
     private Recorder recorder;
     private String className;
     private Document doc;
+    private Element root;
 
-    public HTMLPrinter(Recorder recorder) { 
+    public HTMLBuilder(Recorder recorder) { 
         this.recorder = recorder;
         try {
             doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         } catch (ParserConfigurationException e) {
-            e.printStackTrace(); // FIXXXXXX
+            throw new IllegalStateException(e);
         }
-    }
-
-    @Override public void start() { 
-        Element root = doc.createElement("html");
+        root = doc.createElement("html");
         doc.appendChild(root);
     }
+
+    @Override public void start() { }
+    @Override public void finish() { }
+
     @Override public void giveClassName(String className) { 
         this.className = className; 
         Element head = doc.createElement("head");
-        doc.getFirstChild().appendChild(head);
+        root.appendChild(head);
         Element title = doc.createElement("title");
         head.appendChild(title);
         Text titleText = doc.createTextNode(className);
         title.appendChild(titleText);
     }
-    @Override public void finish() { }
 
-    public void print() {
+    public void output() {
         recorder.write(className, "html", doc);
     }
 }
