@@ -13,7 +13,9 @@ public class HTMLBuilder implements TokenListener {
     private Recorder recorder;
     private String className;
     private Document doc;
-    private Element root;
+    private Element html; 
+    private Element head;
+    private Element body;
 
     public HTMLBuilder(Recorder recorder) { 
         this.recorder = recorder;
@@ -22,13 +24,14 @@ public class HTMLBuilder implements TokenListener {
         } catch (ParserConfigurationException e) {
             throw new IllegalStateException(e);
         }
-        root = doc.createElement("html");
-        doc.appendChild(root);
+        html = addChildElement(doc, "html");
+        html.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+        head = addChildElement(html, "head");
+        body = addChildElement(html, "body");
     }
 
     @Override public void className(String className) { 
         this.className = className; 
-        Element head = addChildElement(root, "head");
         Element title = addChildElement(head, "title");
         addTextChild(title, className);
     }
