@@ -16,20 +16,6 @@ public class InterpreterTest {
     private static final String INVALID_CODE = "public klass Invalid { }";
 
     private Mockery context = new Mockery();   
-    
-    @Test public void 
-    callsStartThenFinishOnListener() throws Exception {
-        final TokenListener listener = context.mock(TokenListener.class);
-        final Sequence listenerCalls = context.sequence("listenerCalls");
-
-        context.checking(new Expectations() {{
-            oneOf (listener).start(); inSequence(listenerCalls);
-            allowing (listener).className(with(any(String.class)));
-            oneOf (listener).finish(); inSequence(listenerCalls);
-        }});
-
-        runAndVerifyInterpreter(listener, TRIVIAL_CLASS_CODE);
-    }
 
     @Test
     public void
@@ -38,9 +24,7 @@ public class InterpreterTest {
         final Sequence listenerCalls = context.sequence("listenerCalls");
 
         context.checking(new Expectations() {{
-            oneOf (listener).start(); inSequence(listenerCalls);
             oneOf (listener).className(CLASS_NAME_FROM_TRIVIAL_CLASS);
-            oneOf (listener).finish(); inSequence(listenerCalls);
         }});
 
         runAndVerifyInterpreter(listener, TRIVIAL_CLASS_CODE);
@@ -50,11 +34,6 @@ public class InterpreterTest {
     public void
     throwsExceptionIfGivenInterface() throws Exception { 
         final TokenListener listener = context.mock(TokenListener.class);
-        
-        context.checking(new Expectations() {{
-            oneOf (listener).start(); 
-        }});
-
         runAndVerifyInterpreter(listener, INTERFACE_CODE);
     }
 
@@ -62,11 +41,6 @@ public class InterpreterTest {
     public void
     throwsExceptionIfGivenInvalidCode() throws Exception { 
         final TokenListener listener = context.mock(TokenListener.class);
-        
-        context.checking(new Expectations() {{
-            oneOf (listener).start(); 
-        }});
-
         runAndVerifyInterpreter(listener, INVALID_CODE);
     }
 
@@ -74,12 +48,11 @@ public class InterpreterTest {
     public void
     throwsExceptionIfGivenUnreadableStream() throws Exception {
         final TokenListener listener = context.mock(TokenListener.class);
-        
-        context.checking(new Expectations() {{
-            oneOf (listener).start(); 
-        }});
-
-        InputStream errorStream = new ErrorStream();
+        InputStream errorStream = new InputStream() {
+            public int read() throws IOException {
+                throw new IOException("test error");
+            }
+        };
 
         Interpreter interpreter = new Interpreter(listener);
         interpreter.interpret(errorStream);
@@ -91,12 +64,6 @@ public class InterpreterTest {
         interpreter.interpret(codeStream);
 
         context.assertIsSatisfied();
-    }
-
-    public static class ErrorStream extends InputStream {
-        public int read() throws IOException {
-            throw new IOException("test error");
-        }
     }
 }
 

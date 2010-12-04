@@ -19,10 +19,7 @@ public class Interpreter {
         
     public void interpret(InputStream codeStream) throws InterpreterException {
         String className = parse(codeStream);
-
-        listener.start();
         listener.className(className);
-        listener.finish();
     }
 
     public String parse(InputStream codeStream) throws InterpreterException {
