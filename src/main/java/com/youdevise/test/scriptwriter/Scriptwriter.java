@@ -13,7 +13,7 @@ public class Scriptwriter {
         try {
             config.parse(args);
 
-            HTMLBuilder builder = new HTMLBuilder(new FileRecorder(config.outputDir));
+            HTMLBuilder builder = new HTMLBuilder(new FilePrinter(config.outputDir));
             Interpreter interpreter = new Interpreter(builder);
 
             FileInputStream codeStream = new FileInputStream(config.codeFile);

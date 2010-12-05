@@ -13,12 +13,12 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Node;
 
-public class FileRecorder implements Recorder {
+public class FilePrinter implements Printer {
     private File outputDir;
 
-    public FileRecorder(File outputDir) { this.outputDir = outputDir; }
+    public FilePrinter(File outputDir) { this.outputDir = outputDir; }
         
-    @Override public void write(String title, String type, Node doc) { 
+    @Override public void print(String title, String type, Node doc) { 
         outputDir.mkdir();
         File outputFile = new File(outputDir, title + "." + type);
 

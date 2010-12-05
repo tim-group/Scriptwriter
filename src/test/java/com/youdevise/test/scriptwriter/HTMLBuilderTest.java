@@ -13,9 +13,9 @@ public class HTMLBuilderTest {
 
     @Test public void 
     usesClassNameAsTitle() throws Exception {
-        final Recorder recorder = mockRecorderCheckingXPath("/html/head/title", CLASS_NAME); 
+        final Printer printer = mockPrinterCheckingXPath("/html/head/title", CLASS_NAME); 
 
-        HTMLBuilder builder = new HTMLBuilder(recorder);
+        HTMLBuilder builder = new HTMLBuilder(printer);
         builder.className(CLASS_NAME);
         builder.output();
 
@@ -25,24 +25,24 @@ public class HTMLBuilderTest {
     @Test
     public void
     providesXMLNamespace() throws Exception {
-        final Recorder recorder = mockRecorderCheckingXPath("/*/namespace::*[name()='']", "http://www.w3.org/1999/xhtml"); 
+        final Printer printer = mockPrinterCheckingXPath("/*/namespace::*[name()='']", "http://www.w3.org/1999/xhtml"); 
 
-        HTMLBuilder builder = new HTMLBuilder(recorder);
+        HTMLBuilder builder = new HTMLBuilder(printer);
         builder.className(CLASS_NAME);
         builder.output();
 
         context.assertIsSatisfied();
     }
 
-    private Recorder mockRecorderCheckingXPath(final String xpath, final String value) {
-        final Recorder recorder = context.mock(Recorder.class);
+    private Printer mockPrinterCheckingXPath(final String xpath, final String value) {
+        final Printer printer = context.mock(Printer.class);
 
         context.checking(new Expectations() {{
-            oneOf (recorder).write(with(equal(CLASS_NAME)), with(equal("html")), 
-                             with(hasXPath(xpath, equal(value)))); 
+            oneOf (printer).print(with(equal(CLASS_NAME)), with(equal("html")), 
+                                  with(hasXPath(xpath, equal(value)))); 
         }});
 
-        return recorder;
+        return printer;
     }
 }
 

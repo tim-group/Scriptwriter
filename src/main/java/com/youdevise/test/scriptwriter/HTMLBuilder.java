@@ -10,15 +10,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
 public class HTMLBuilder implements TokenListener {
-    private Recorder recorder;
+    private Printer printer;
     private String className;
     private Document doc;
     private Element html; 
     private Element head;
     private Element body;
 
-    public HTMLBuilder(Recorder recorder) { 
-        this.recorder = recorder;
+    public HTMLBuilder(Printer printer) { 
+        this.printer = printer;
         try {
             doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         } catch (ParserConfigurationException e) {
@@ -37,7 +37,7 @@ public class HTMLBuilder implements TokenListener {
     }
 
     public void output() {
-        recorder.write(className, "html", doc);
+        printer.print(className, "html", doc);
     }
 
     private Element addChildElement(Node node, String name) {
