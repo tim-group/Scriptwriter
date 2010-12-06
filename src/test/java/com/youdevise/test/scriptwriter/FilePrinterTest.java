@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasXPath;
@@ -49,8 +48,8 @@ public class FilePrinterTest {
     @Test public void
     createsAFileWithGivenNameAndExtension() throws Exception {
         runPrinter();
-        String fileName = outputDir.list()[0]; // Replace with assertThat(contains)
-        assertEquals("books.xml", fileName);
+        File outputFile = new File(outputDir, "books.xml");
+        assertTrue(outputFile.exists()); // Use assertThat
     }
 
     @Test public void
