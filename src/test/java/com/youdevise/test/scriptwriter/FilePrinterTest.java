@@ -38,15 +38,20 @@ public class FilePrinterTest {
     createsAFileInOutputDir() throws Exception {
         Printer printer = new FilePrinter(outputDir);
         printer.print("books", "xml", doc);
-        assertTrue(outputDir.list().length > 0); // Replace with assertThat
+        assertTrue(outputDir.list().length > 0); // Replace with assertThat(is(greater_than))
     }
 
     @Test public void
     createsAFileWithGivenNameAndExtension() throws Exception {
         Printer printer = new FilePrinter(outputDir);
         printer.print("books", "xml", doc);
-        String fileName = outputDir.list()[0];
+        String fileName = outputDir.list()[0]; // Replace with assertThat(contains)
         assertEquals("books.xml", fileName);
+    }
+
+    private void runPrinter() {
+        Printer printer = new FilePrinter(outputDir);
+        printer.print("books", "xml", doc);
     }
 
 // REMOVE DUPLICATION
