@@ -14,16 +14,22 @@ import org.w3c.dom.Text;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasXPath;
+
 public class FilePrinterTest {
-    private File outputDir;
+    private DocumentBuilder builder;
     private Document doc;
+    private File outputDir;
 
     @Before public void
     setupDocument() throws Exception {
-        doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        doc = builder.newDocument();
         Element books = addChildElement(doc, "books");
         Element bigSleep = addChildElement(books, "book");
         addTextChild(bigSleep, "The Big Sleep");
@@ -45,6 +51,13 @@ public class FilePrinterTest {
         runPrinter();
         String fileName = outputDir.list()[0]; // Replace with assertThat(contains)
         assertEquals("books.xml", fileName);
+    }
+
+    @Test public void
+    serializesTheGivenXMLFile() throws Exception {
+        runPrinter();
+        Document outputDoc = builder.parse(new File(outputDir, "books.xml"));
+        assertThat(outputDoc, hasXPath("/books/book", equalTo("The Big Sleep")));
     }
 
     private void runPrinter() {
