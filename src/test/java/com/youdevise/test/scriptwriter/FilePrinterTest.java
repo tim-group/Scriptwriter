@@ -36,15 +36,13 @@ public class FilePrinterTest {
     
     @Test public void 
     createsAFileInOutputDir() throws Exception {
-        Printer printer = new FilePrinter(outputDir);
-        printer.print("books", "xml", doc);
+        runPrinter();
         assertTrue(outputDir.list().length > 0); // Replace with assertThat(is(greater_than))
     }
 
     @Test public void
     createsAFileWithGivenNameAndExtension() throws Exception {
-        Printer printer = new FilePrinter(outputDir);
-        printer.print("books", "xml", doc);
+        runPrinter();
         String fileName = outputDir.list()[0]; // Replace with assertThat(contains)
         assertEquals("books.xml", fileName);
     }
