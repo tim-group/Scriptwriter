@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class FilePrinterTest {
     private File outputDir;
@@ -38,6 +39,14 @@ public class FilePrinterTest {
         Printer printer = new FilePrinter(outputDir);
         printer.print("books", "xml", doc);
         assertTrue(outputDir.list().length > 0); // Replace with assertThat
+    }
+
+    @Test public void
+    createsAFileWithGivenNameAndExtension() throws Exception {
+        Printer printer = new FilePrinter(outputDir);
+        printer.print("books", "xml", doc);
+        String fileName = outputDir.list()[0];
+        assertEquals("books.xml", fileName);
     }
 
 // REMOVE DUPLICATION
