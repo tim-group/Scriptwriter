@@ -15,12 +15,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.hasXPath;
 
-public class FilePrinterTest {
+public class PrinterTest {
     private DocumentBuilder builder;
     private Document doc;
     private File outputDir;
@@ -42,14 +44,14 @@ public class FilePrinterTest {
     @Test public void 
     createsAFileInOutputDir() throws Exception {
         runPrinter();
-        assertTrue(outputDir.list().length > 0); // Replace with assertThat(is(greater_than))
+        assertThat(outputDir.list(), is(arrayWithSize(greaterThan(0)))); 
     }
 
     @Test public void
     createsAFileWithGivenNameAndExtension() throws Exception {
         runPrinter();
         File outputFile = new File(outputDir, "books.xml");
-        assertTrue(outputFile.exists()); // Use assertThat
+        assertThat(outputFile.exists(), is(true)); 
     }
 
     @Test public void
@@ -60,8 +62,8 @@ public class FilePrinterTest {
     }
 
     private void runPrinter() {
-        Printer printer = new FilePrinter(outputDir);
-        printer.print("books", "xml", doc);
+        Printer printer = new Printer(outputDir);
+        printer.receive("books", "xml", doc);
     }
 
 // REMOVE DUPLICATION

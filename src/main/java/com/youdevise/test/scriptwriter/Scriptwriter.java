@@ -13,13 +13,12 @@ public class Scriptwriter {
         try {
             config.parse(args);
 
-            HTMLBuilder builder = new HTMLBuilder(new FilePrinter(config.outputDir));
-            Interpreter interpreter = new Interpreter(builder);
+            DocumentConstructor constructor = new DocumentConstructor(new Printer(config.outputDir));
+            Interpreter interpreter = new Interpreter(constructor);
 
             FileInputStream codeStream = new FileInputStream(config.codeFile);
             interpreter.interpret(codeStream);
-
-            builder.output();
+            constructor.output();
         } catch (IOException e) {
             System.err.print("Error in reading code file");
             System.err.println(e.getMessage());

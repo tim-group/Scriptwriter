@@ -9,16 +9,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
-public class HTMLBuilder implements TokenListener {
-    private Printer printer;
+public class DocumentConstructor implements TokenListener {
+    private DocumentReceiver receiver;
     private String className;
     private Document doc;
     private Element html; 
     private Element head;
     private Element body;
 
-    public HTMLBuilder(Printer printer) { 
-        this.printer = printer;
+    public DocumentConstructor(DocumentReceiver receiver) { 
+        this.receiver = receiver;
         try {
             doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         } catch (ParserConfigurationException e) {
@@ -37,7 +37,7 @@ public class HTMLBuilder implements TokenListener {
     }
 
     public void output() {
-        printer.print(className, "html", doc);
+        receiver.receive(className, "html", doc);
     }
 
     private Element addChildElement(Node node, String name) {
