@@ -9,10 +9,14 @@ import com.youdevise.test.narrative.When;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Matcher;
 import org.junit.BeforeClass;
@@ -37,6 +41,12 @@ public class UserGeneratesReadableNarrative {
         codeDir = makeTempDir("Scriptwriter-test-code-");
         outputDir = makeTempDir("Scriptwriter-test-output-");
         builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        builder.setEntityResolver(new EntityResolver() { // FIXXXXX
+            @Override
+            public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+                return new InputSource(new StringReader(""));
+            }
+        });
     }
 
     public static File makeTempDir(String name) throws Exception {
