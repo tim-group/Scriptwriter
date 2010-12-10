@@ -14,18 +14,17 @@ import org.apache.commons.io.FileUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
-import org.w3c.dom.Node;
 
 public class Printer implements DocumentReceiver {
     private File outputDir;
 
     public Printer(File outputDir) { this.outputDir = outputDir; }
         
-    @Override public void receive(String title, String type, Node doc) { 
+    @Override public void receive(String title, String type, Document doc) { 
         outputDir.mkdir();
         File outputFile = new File(outputDir, title + "." + type);
 
-        DocumentType doctype = ((Document)doc).getDoctype();
+        DocumentType doctype = doc.getDoctype();
 
         try { 
             Source source = new DOMSource(doc); 
