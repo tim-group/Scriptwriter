@@ -93,7 +93,6 @@ public class PrinterTest {
         printer.receive("books", "xml", doc);
     }
 
-// REMOVE DUPLICATION
     private Element addChildElement(Node node, String name) {
         Element element = doc.createElement(name);
         node.appendChild(element);

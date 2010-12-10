@@ -32,7 +32,7 @@ public class Printer implements DocumentReceiver {
 
             transformer.transform(source, result);
         } catch (TransformerException e) { 
-            e.printStackTrace(); // FIXXXXXX
+            throw new PrintingException("Failed during transform", e);
         } 
     }
 }
