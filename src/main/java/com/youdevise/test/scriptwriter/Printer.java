@@ -11,6 +11,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
 import org.w3c.dom.Node;
 
 public class Printer implements DocumentReceiver {
@@ -22,13 +25,15 @@ public class Printer implements DocumentReceiver {
         outputDir.mkdir();
         File outputFile = new File(outputDir, title + "." + type);
 
+        DocumentType doctype = ((Document)doc).getDoctype();
+
         try { 
             Source source = new DOMSource(doc); 
             Result result = new StreamResult(outputFile); 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN");
-            transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
+            transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, doctype.getPublicId());
+            transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, doctype.getSystemId());
 
             transformer.transform(source, result);
         } catch (TransformerException e) { 

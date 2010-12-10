@@ -8,6 +8,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -25,6 +26,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class PrinterTest {
+    private static final String PUBLIC_ID = "-//TEST//DTD PUBLIC-ID//EN";
+    private static final String SYSTEM_ID = "http://www.example.com/system-id.dtd";
     private DocumentBuilder builder;
     private Document doc;
     private File outputDir;
@@ -33,7 +36,11 @@ public class PrinterTest {
     setupDocument() throws Exception {
         builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         builder.setEntityResolver(new TrivialEntityResolver());
+
         doc = builder.newDocument();
+        DocumentType doctype = doc.getImplementation().createDocumentType("books", PUBLIC_ID, SYSTEM_ID);
+        doc.appendChild(doctype);
+
         Element books = addChildElement(doc, "books");
         Element bigSleep = addChildElement(books, "book");
         addTextChild(bigSleep, "The Big Sleep");
@@ -62,6 +69,30 @@ public class PrinterTest {
         runPrinter();
         Document outputDoc = builder.parse(new File(outputDir, "books.xml"));
         assertThat(outputDoc, hasXPath("/books/book", equalTo("The Big Sleep")));
+    }
+
+    @Test public void
+    assignsADoctype() throws Exception {
+        runPrinter();
+        Document outputDoc = builder.parse(new File(outputDir, "books.xml"));
+        DocumentType docType = outputDoc.getDoctype();
+        assertThat(docType, is(notNullValue()));
+    }
+
+    @Test public void
+    usesPublicId() throws Exception {
+        runPrinter();
+        Document outputDoc = builder.parse(new File(outputDir, "books.xml"));
+        DocumentType docType = outputDoc.getDoctype();
+        assertThat(docType.getPublicId(), is(equalTo(PUBLIC_ID)));
+    }
+
+    @Test public void
+    usesSystemId() throws Exception {
+        runPrinter();
+        Document outputDoc = builder.parse(new File(outputDir, "books.xml"));
+        DocumentType docType = outputDoc.getDoctype();
+        assertThat(docType.getSystemId(), is(equalTo(SYSTEM_ID)));
     }
 
     private void runPrinter() {
