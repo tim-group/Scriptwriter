@@ -57,6 +57,22 @@ public class DocumentConstructorTest {
     }
 
     @Test public void
+    providesXHTMLSystemId() throws Exception {
+        final DocumentReceiver receiver = context.mock(DocumentReceiver.class);
+
+        context.checking(new Expectations() {{
+            oneOf (receiver).receive(with(equal(CLASS_NAME)), with(equal("html")), 
+                                     with(systemIdOf("http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"))); 
+        }});
+
+        DocumentConstructor constructor = new DocumentConstructor(receiver);
+        constructor.className(CLASS_NAME);
+        constructor.output();
+
+        context.assertIsSatisfied();
+    }
+
+    @Test public void
     providesXMLNamespace() throws Exception {
         final DocumentReceiver receiver = mockReceiverCheckingXPath("/*/namespace::*[name()='']", "http://www.w3.org/1999/xhtml"); 
 
@@ -76,7 +92,21 @@ public class DocumentConstructorTest {
             }
 
             public void describeTo(Description description) {
-                description.appendText("a Document with public ID " + publicId);
+                description.appendText("a Document with public ID '" + publicId + "'");
+            }
+        };
+    }
+
+    private Matcher<Node> systemIdOf(final String systemId) {
+        return new TypeSafeMatcher<Node>() {
+            @Override public boolean matchesSafely(Node doc) {
+                DocumentType doctype = ((Document)doc).getDoctype();
+                if (null == doctype) { return false; }
+                return doctype.getSystemId().equals(systemId);
+            }
+
+            public void describeTo(Description description) {
+                description.appendText("a Document with system ID '" + systemId + "'");
             }
         };
     }

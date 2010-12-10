@@ -64,30 +64,6 @@ public class PrinterTest {
         assertThat(outputDoc, hasXPath("/books/book", equalTo("The Big Sleep")));
     }
 
-    @Test public void
-    assignsADoctype() throws Exception {
-        runPrinter();
-        Document outputDoc = builder.parse(new File(outputDir, "books.xml"));
-        DocumentType docType = outputDoc.getDoctype();
-        assertThat(docType, is(notNullValue()));
-    }
-
-    @Test public void
-    usesXHTMLPublicId() throws Exception {
-        runPrinter();
-        Document outputDoc = builder.parse(new File(outputDir, "books.xml"));
-        DocumentType docType = outputDoc.getDoctype();
-        assertThat(docType.getPublicId(), is(equalTo("-//W3C//DTD XHTML 1.0 Strict//EN")));
-    }
-
-    @Test public void
-    usesXHTMLSystemId() throws Exception {
-        runPrinter();
-        Document outputDoc = builder.parse(new File(outputDir, "books.xml"));
-        DocumentType docType = outputDoc.getDoctype();
-        assertThat(docType.getSystemId(), is(equalTo("http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd")));
-    }
-
     private void runPrinter() {
         Printer printer = new Printer(outputDir);
         printer.receive("books", "xml", doc);
