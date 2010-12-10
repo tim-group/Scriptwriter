@@ -22,7 +22,7 @@ public class DocumentConstructor implements TokenListener {
         try {
             doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         } catch (ParserConfigurationException e) {
-            throw new IllegalStateException(e);
+            throw new DocumentConstructionException("Failed to create empty document", e);
         }
         html = addChildElement(doc, "html");
         html.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
