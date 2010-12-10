@@ -12,6 +12,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Node;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasXPath;
 
 // delete me
@@ -31,7 +32,7 @@ public class DocumentConstructorTest {
 
     @Test public void 
     usesClassNameAsTitle() throws Exception {
-        final DocumentReceiver receiver = mockReceiverCheckingXPath("/html/head/title", CLASS_NAME); 
+        final DocumentReceiver receiver = mockReceiverWithDocumentMatcher(hasXPath("/html/head/title", equalTo(CLASS_NAME))); 
 
         DocumentConstructor constructor = new DocumentConstructor(receiver);
         constructor.className(CLASS_NAME);
@@ -42,12 +43,7 @@ public class DocumentConstructorTest {
 
     @Test public void
     providesXHTMLPublicId() throws Exception {
-        final DocumentReceiver receiver = context.mock(DocumentReceiver.class);
-
-        context.checking(new Expectations() {{
-            oneOf (receiver).receive(with(equal(CLASS_NAME)), with(equal("html")), 
-                                     with(publicIdOf("-//W3C//DTD XHTML 1.0 Strict//EN"))); 
-        }});
+        final DocumentReceiver receiver = mockReceiverWithDocumentMatcher(publicIdOf("-//W3C//DTD XHTML 1.0 Strict//EN")); 
 
         DocumentConstructor constructor = new DocumentConstructor(receiver);
         constructor.className(CLASS_NAME);
@@ -58,12 +54,7 @@ public class DocumentConstructorTest {
 
     @Test public void
     providesXHTMLSystemId() throws Exception {
-        final DocumentReceiver receiver = context.mock(DocumentReceiver.class);
-
-        context.checking(new Expectations() {{
-            oneOf (receiver).receive(with(equal(CLASS_NAME)), with(equal("html")), 
-                                     with(systemIdOf("http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"))); 
-        }});
+        final DocumentReceiver receiver = mockReceiverWithDocumentMatcher(systemIdOf("http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
 
         DocumentConstructor constructor = new DocumentConstructor(receiver);
         constructor.className(CLASS_NAME);
@@ -74,7 +65,7 @@ public class DocumentConstructorTest {
 
     @Test public void
     providesXMLNamespace() throws Exception {
-        final DocumentReceiver receiver = mockReceiverCheckingXPath("/*/namespace::*[name()='']", "http://www.w3.org/1999/xhtml"); 
+        final DocumentReceiver receiver = mockReceiverWithDocumentMatcher(hasXPath("/*/namespace::*[name()='']", equalTo("http://www.w3.org/1999/xhtml"))); 
 
         DocumentConstructor constructor = new DocumentConstructor(receiver);
         constructor.className(CLASS_NAME);
@@ -111,12 +102,12 @@ public class DocumentConstructorTest {
         };
     }
 
-    private DocumentReceiver mockReceiverCheckingXPath(final String xpath, final String value) {
+    private DocumentReceiver mockReceiverWithDocumentMatcher(final Matcher<Node> documentMatcher) {
         final DocumentReceiver receiver = context.mock(DocumentReceiver.class);
 
         context.checking(new Expectations() {{
             oneOf (receiver).receive(with(equal(CLASS_NAME)), with(equal("html")), 
-                                     with(hasXPath(xpath, equal(value)))); 
+                                     with(documentMatcher)); 
         }});
 
         return receiver;
