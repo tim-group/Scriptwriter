@@ -32,40 +32,30 @@ public class DocumentConstructorTest {
 
     @Test public void 
     usesClassNameAsTitle() throws Exception {
-        final DocumentReceiver receiver = mockReceiverWithDocumentMatcher(hasXPath("/html/head/title", equalTo(CLASS_NAME))); 
-
-        DocumentConstructor constructor = new DocumentConstructor(receiver);
-        constructor.className(CLASS_NAME);
-        constructor.output();
-
-        context.assertIsSatisfied();
+        runBasicTestAndValidateDocumentSatisfies( hasXPath("/html/head/title", equalTo(CLASS_NAME)) ); 
     }
 
     @Test public void
     providesXHTMLPublicId() throws Exception {
-        final DocumentReceiver receiver = mockReceiverWithDocumentMatcher(publicIdOf("-//W3C//DTD XHTML 1.0 Strict//EN")); 
-
-        DocumentConstructor constructor = new DocumentConstructor(receiver);
-        constructor.className(CLASS_NAME);
-        constructor.output();
-
-        context.assertIsSatisfied();
+        runBasicTestAndValidateDocumentSatisfies( publicIdOf("-//W3C//DTD XHTML 1.0 Strict//EN") ); 
     }
 
     @Test public void
     providesXHTMLSystemId() throws Exception {
-        final DocumentReceiver receiver = mockReceiverWithDocumentMatcher(systemIdOf("http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
-
-        DocumentConstructor constructor = new DocumentConstructor(receiver);
-        constructor.className(CLASS_NAME);
-        constructor.output();
-
-        context.assertIsSatisfied();
+        runBasicTestAndValidateDocumentSatisfies( systemIdOf("http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd") );
     }
 
     @Test public void
     providesXMLNamespace() throws Exception {
-        final DocumentReceiver receiver = mockReceiverWithDocumentMatcher(hasXPath("/*/namespace::*[name()='']", equalTo("http://www.w3.org/1999/xhtml"))); 
+        runBasicTestAndValidateDocumentSatisfies( hasXPath("/*/namespace::*[name()='']", equalTo("http://www.w3.org/1999/xhtml")) ); 
+    }
+
+    private void runBasicTestAndValidateDocumentSatisfies(final Matcher<Node> documentMatcher) {
+        final DocumentReceiver receiver = context.mock(DocumentReceiver.class);
+
+        context.checking(new Expectations() {{
+            oneOf (receiver).receive(with(equal(CLASS_NAME)), with(equal("html")), with(documentMatcher)); 
+        }});
 
         DocumentConstructor constructor = new DocumentConstructor(receiver);
         constructor.className(CLASS_NAME);
@@ -100,17 +90,6 @@ public class DocumentConstructorTest {
                 description.appendText("a Document with system ID '" + systemId + "'");
             }
         };
-    }
-
-    private DocumentReceiver mockReceiverWithDocumentMatcher(final Matcher<Node> documentMatcher) {
-        final DocumentReceiver receiver = context.mock(DocumentReceiver.class);
-
-        context.checking(new Expectations() {{
-            oneOf (receiver).receive(with(equal(CLASS_NAME)), with(equal("html")), 
-                                     with(documentMatcher)); 
-        }});
-
-        return receiver;
     }
 }
 
