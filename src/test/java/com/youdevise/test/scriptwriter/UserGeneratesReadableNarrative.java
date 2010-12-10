@@ -37,6 +37,7 @@ public class UserGeneratesReadableNarrative {
         codeDir = makeTempDir("Scriptwriter-test-code-");
         outputDir = makeTempDir("Scriptwriter-test-output-");
         builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        builder.setEntityResolver(new TrivialEntityResolver());
     }
 
     public static File makeTempDir(String name) throws Exception {
