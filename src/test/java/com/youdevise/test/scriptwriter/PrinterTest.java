@@ -41,7 +41,7 @@ public class PrinterTest {
 
     @Before public void
     createOutputDirectory() throws Exception {
-        outputDir = makeTempDir("FilePrinter-test-output");
+        outputDir = makeTempDir("Printer-test-output");
     }
     
     @Test public void 
