@@ -1,16 +1,11 @@
 package com.youdevise.test.scriptwriter;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -35,13 +30,6 @@ public class PrinterTest {
     @Before public void
     setupDocument() throws Exception {
         builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        builder.setEntityResolver(new EntityResolver() { // FIXXXXX
-            @Override
-            public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-                return new InputSource(new StringReader(""));
-            }
-        });
-
         doc = builder.newDocument();
         Element books = addChildElement(doc, "books");
         Element bigSleep = addChildElement(books, "book");
