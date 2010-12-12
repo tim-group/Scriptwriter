@@ -34,17 +34,10 @@ public class UserGeneratesReadableNarrative {
     private static DocumentBuilder builder;
 
     @BeforeClass public static void setup() throws Exception {
-        codeDir = makeTempDir("Scriptwriter-test-code-");
-        outputDir = makeTempDir("Scriptwriter-test-output-");
+        codeDir = TestFileUtils.makeTempDir("Scriptwriter-test-code-");
+        outputDir = TestFileUtils.makeTempDir("Scriptwriter-test-output-");
         builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         builder.setEntityResolver(new TrivialEntityResolver());
-    }
-
-    public static File makeTempDir(String name) throws Exception {
-        File dir = File.createTempFile(name, Long.toString(System.nanoTime()));
-        dir.delete();
-        dir.mkdir();
-        return dir;
     }
 
     @Test public void

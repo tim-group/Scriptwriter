@@ -48,7 +48,7 @@ public class PrinterTest {
 
     @Before public void
     createOutputDirectory() throws Exception {
-        outputDir = makeTempDir("Printer-test-output");
+        outputDir = TestFileUtils.makeTempDir("Printer-test-output");
     }
     
     @Test public void 
@@ -100,11 +100,5 @@ public class PrinterTest {
         printer.receive("books", "xml", doc);
     }
 
-    public static File makeTempDir(String name) throws Exception {
-        File dir = File.createTempFile(name, Long.toString(System.nanoTime()));
-        dir.delete();
-        dir.mkdir();
-        return dir;
-    }
 }
 
