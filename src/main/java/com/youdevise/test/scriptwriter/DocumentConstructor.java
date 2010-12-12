@@ -32,31 +32,20 @@ public class DocumentConstructor implements TokenListener {
         doc = builder.newDocument();
         DocumentType doctype = doc.getImplementation().createDocumentType("html", "-//W3C//DTD XHTML 1.0 Strict//EN", "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
         doc.appendChild(doctype);
-        html = addChildElement(doc, "html");
+        html = DOMUtils.addChildElement(doc, "html");
         html.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
 
-        head = addChildElement(html, "head");
-        body = addChildElement(html, "body");
+        head = DOMUtils.addChildElement(html, "head");
+        body = DOMUtils.addChildElement(html, "body");
     }
 
     @Override public void className(String className) { 
         this.className = className; 
-        Element title = addChildElement(head, "title");
-        addTextChild(title, className);
+        Element title = DOMUtils.addChildElement(head, "title");
+        DOMUtils.addTextChild(title, className);
     }
 
     public void output() {
         receiver.receive(className, "html", doc);
-    }
-
-    private Element addChildElement(Node node, String name) {
-        Element element = doc.createElement(name);
-        node.appendChild(element);
-        return element;
-    }
-
-    private void addTextChild(Node node, String text) {
-        Text textNode = doc.createTextNode(text);
-        node.appendChild(textNode);
     }
 }

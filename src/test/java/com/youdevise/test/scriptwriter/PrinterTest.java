@@ -41,9 +41,9 @@ public class PrinterTest {
         DocumentType doctype = doc.getImplementation().createDocumentType("books", PUBLIC_ID, SYSTEM_ID);
         doc.appendChild(doctype);
 
-        Element books = addChildElement(doc, "books");
-        Element bigSleep = addChildElement(books, "book");
-        addTextChild(bigSleep, "The Big Sleep");
+        Element books = DOMUtils.addChildElement(doc, "books");
+        Element bigSleep = DOMUtils.addChildElement(books, "book");
+        DOMUtils.addTextChild(bigSleep, "The Big Sleep");
     }
 
     @Before public void
@@ -98,17 +98,6 @@ public class PrinterTest {
     private void runPrinter() {
         Printer printer = new Printer(outputDir);
         printer.receive("books", "xml", doc);
-    }
-
-    private Element addChildElement(Node node, String name) {
-        Element element = doc.createElement(name);
-        node.appendChild(element);
-        return element;
-    }
-
-    private void addTextChild(Node node, String text) {
-        Text textNode = doc.createTextNode(text);
-        node.appendChild(textNode);
     }
 
     public static File makeTempDir(String name) throws Exception {
