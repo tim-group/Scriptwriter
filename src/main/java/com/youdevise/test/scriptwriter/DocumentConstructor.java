@@ -20,12 +20,8 @@ public class DocumentConstructor implements TokenListener {
     private Element head;
     private Element body;
 
-    public DocumentConstructor(DocumentReceiver rec) {
-        this(rec, new Editor() {
-                       public String edit(String text) {
-                           return text;
-                       }
-                  });
+    public DocumentConstructor(DocumentReceiver rcvr) {
+        this(rcvr, new SpaceAddingEditor());
     }
 
     public DocumentConstructor(DocumentReceiver receiver, Editor editor) { 

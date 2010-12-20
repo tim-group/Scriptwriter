@@ -16,13 +16,14 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasXPath;
 
 public class DocumentConstructorTest {
-    private static final String CLASS_NAME = "Order";
+    private static final String CLASS_NAME = "UserCanCancelOrder";
+    private static final String EDITED_CLASS_NAME = "User Can Cancel Order";
 
     private Mockery context = new Mockery();   
 
     @Test public void 
-    usesClassNameAsTitle() throws Exception {
-        runBasicTestAndValidateDocumentSatisfies( xPathInDocumentOf("/html/head/title", CLASS_NAME) ); 
+    usesEditedClassNameAsTitle() throws Exception {
+        runBasicTestAndValidateDocumentSatisfies( xPathInDocumentOf("/html/head/title", EDITED_CLASS_NAME) ); 
     }
 
     @Test public void
@@ -42,12 +43,14 @@ public class DocumentConstructorTest {
 
     private void runBasicTestAndValidateDocumentSatisfies(final Matcher<Document> documentMatcher) {
         final DocumentReceiver receiver = context.mock(DocumentReceiver.class);
+        final Editor editor = context.mock(Editor.class);
 
         context.checking(new Expectations() {{
             oneOf (receiver).receive(with(equal(CLASS_NAME)), with(equal("html")), with(documentMatcher)); 
+            oneOf (editor).edit(CLASS_NAME); will(returnValue(EDITED_CLASS_NAME)); 
         }});
 
-        DocumentConstructor constructor = new DocumentConstructor(receiver);
+        DocumentConstructor constructor = new DocumentConstructor(receiver, editor);
         constructor.className(CLASS_NAME);
         constructor.output();
 

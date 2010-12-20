@@ -50,7 +50,7 @@ public class UserGeneratesReadableNarrative {
          
         When.the(author).attempts_to(produce_a_human_readable_version_of_the_test());
          
-        Then.the(author).expects_that(the_output_for(THE_TEST_CLASS), has_a_title_of(THE_TEST_CLASS));
+        Then.the(author).expects_that(the_output_for(THE_TEST_CLASS), has_a_title_of(TEST_CLASS_OUTPUT_NAME));
     }
     
     private Action<Scriptwriter, AuthorActor> write(final String code) {
