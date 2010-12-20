@@ -21,6 +21,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasXPath;
 
@@ -86,7 +87,9 @@ public class UserGeneratesReadableNarrative {
     }
 
     private Matcher<Node> has_the_same_title_as(String className) {
-        return hasXPath("/html/head/title", equalTo(className));
+        return allOf(
+                hasXPath("/html/head/title", equalTo(className)),
+                hasXPath("/html/body/h1", equalTo(className)));
     }
 
     public static class AuthorActor implements Actor<Scriptwriter, AuthorActor> {

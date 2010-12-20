@@ -43,6 +43,8 @@ public class DocumentConstructor implements TokenListener {
         this.className = className; 
         Element title = DOMUtils.addChildElement(head, "title");
         DOMUtils.addTextChild(title, className);
+        Element h1 = DOMUtils.addChildElement(body, "h1");
+        DOMUtils.addTextChild(h1, className);
     }
 
     public void output() {
