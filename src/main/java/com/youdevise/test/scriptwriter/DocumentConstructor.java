@@ -13,7 +13,7 @@ import org.w3c.dom.Text;
 
 public class DocumentConstructor implements TokenListener {
     private DocumentReceiver receiver;
-    private StringCleaner cleaner;
+    private Editor editor;
     private String className;
     private Document doc;
     private Element html; 
@@ -21,16 +21,16 @@ public class DocumentConstructor implements TokenListener {
     private Element body;
 
     public DocumentConstructor(DocumentReceiver rec) {
-        this(rec, new StringCleaner() {
-                       public String clean(String text) {
+        this(rec, new Editor() {
+                       public String edit(String text) {
                            return text;
                        }
                   });
     }
 
-    public DocumentConstructor(DocumentReceiver receiver, StringCleaner cleaner) { 
+    public DocumentConstructor(DocumentReceiver receiver, Editor editor) { 
         this.receiver = receiver;
-        this.cleaner = cleaner;
+        this.editor = editor;
 
         DocumentBuilder builder;
         try {
@@ -51,7 +51,7 @@ public class DocumentConstructor implements TokenListener {
 
     @Override public void className(String className) { 
         this.className = className; 
-        String outputClassName = cleaner.clean(className);
+        String outputClassName = editor.edit(className);
 
         Element title = DOMUtils.addChildElement(head, "title");
         DOMUtils.addTextChild(title, outputClassName);
