@@ -27,8 +27,9 @@ import static org.hamcrest.Matchers.hasXPath;
 
 public class UserGeneratesReadableNarrative {
     private static final String A_SIMPLE_NARRATIVE_TEST_CLASS =
-        "public class LibraryUsers { }";
-    private static final String the_test_class = "LibraryUsers";
+        "public class LibraryUsersViewTheirRecords { }";
+    private static final String THE_TEST_CLASS = "LibraryUsersViewTheirRecords";
+    private static final String TEST_CLASS_OUTPUT_NAME = "Library Users View Their Records";
 
     private static File codeDir;
     private static File outputDir;
@@ -49,7 +50,7 @@ public class UserGeneratesReadableNarrative {
          
         When.the(author).attempts_to(produce_a_human_readable_version_of_the_test());
          
-        Then.the(author).expects_that(the_output_for(the_test_class), has_the_same_title_as(the_test_class));
+        Then.the(author).expects_that(the_output_for(THE_TEST_CLASS), has_a_title_of(THE_TEST_CLASS));
     }
     
     private Action<Scriptwriter, AuthorActor> write(final String code) {
@@ -86,7 +87,7 @@ public class UserGeneratesReadableNarrative {
         }; 
     }
 
-    private Matcher<Node> has_the_same_title_as(String className) {
+    private Matcher<Node> has_a_title_of(String className) {
         return allOf(
                 hasXPath("/html/head/title", equalTo(className)),
                 hasXPath("/html/body/h1", equalTo(className)));
